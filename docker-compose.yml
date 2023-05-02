@@ -95,7 +95,7 @@ services:
 
   sidekiq:
     build: .
-    image: ghcr.io/mastodon/mastodon.v4.1.1
+    image: ghcr.io/mastodon/mastodon:v4.1.1
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
