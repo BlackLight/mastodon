@@ -1,27 +1,27 @@
 version: '3'
 services:
-  db:
-    restart: always
-    image: postgres:14-alpine
-    shm_size: 256mb
-    networks:
-      - internal_network
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres']
-    volumes:
-      - ./postgres14:/var/lib/postgresql/data
-    environment:
-      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+  # db:
+  #   restart: always
+  #   image: postgres:14-alpine
+  #   shm_size: 256mb
+  #   networks:
+  #     - internal_network
+  #   healthcheck:
+  #     test: ['CMD', 'pg_isready', '-U', 'postgres']
+  #   volumes:
+  #     - ./postgres14:/var/lib/postgresql/data
+  #   environment:
+  #     - 'POSTGRES_HOST_AUTH_METHOD=trust'
 
-  redis:
-    restart: always
-    image: redis:7-alpine
-    networks:
-      - internal_network
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-    volumes:
-      - ./redis:/data
+  # redis:
+  #   restart: always
+  #   image: redis:7-alpine
+  #   networks:
+  #     - internal_network
+  #   healthcheck:
+  #     test: ['CMD', 'redis-cli', 'ping']
+  #   volumes:
+  #     - ./redis:/data
 
   # es:
   #   restart: always
@@ -56,7 +56,7 @@ services:
 
   web:
     build: .
-    image: ghcr.io/mastodon/mastodon
+    image: ghcr.io/mastodon/mastodon:v4.1.1
     restart: always
     env_file: .env.production
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
@@ -68,16 +68,16 @@ services:
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
     ports:
       - '127.0.0.1:3000:3000'
-    depends_on:
-      - db
-      - redis
-      # - es
+    # depends_on:
+    #   - db
+    #   - redis
+    #   - es
     volumes:
       - ./public/system:/mastodon/public/system
 
   streaming:
     build: .
-    image: ghcr.io/mastodon/mastodon
+    image: ghcr.io/mastodon/mastodon:v4.1.1
     restart: always
     env_file: .env.production
     command: node ./streaming
@@ -89,19 +89,19 @@ services:
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1']
     ports:
       - '127.0.0.1:4000:4000'
-    depends_on:
-      - db
-      - redis
+    # depends_on:
+    #   - db
+    #   - redis
 
   sidekiq:
     build: .
-    image: ghcr.io/mastodon/mastodon
+    image: ghcr.io/mastodon/mastodon:v4.1.1
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
-    depends_on:
-      - db
-      - redis
+    # depends_on:
+    #   - db
+    #   - redis
     networks:
       - external_network
       - internal_network
